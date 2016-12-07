@@ -14,16 +14,24 @@ class Explosion
 		window, SPRITE, 128, 128, false)
 	end
 	
-	def initialize(animation, x, y)
+	def initialize(animation, sound,  x, y)
 		@animation = animation
+		sound.play
 		@x, @y= x, y
 		@current_frame =0
+	end
+	
+	def self.load_sound(window)
+		Gosu::Sample.new(window,media_path('explosion.wav'))
 	end
 
 	def update
 		@current_frame += 1 if frame_expired?
 	end
 	
+	def sound
+		sound.play
+	end
 	def draw 
 		return if done?
 		image = current_frame
@@ -61,7 +69,11 @@ class GameWindow <Gosu::Window
 		self.caption = "animation.rb"
 		@background = Gosu::Image.new(
 			self, BACKGROUND, false)
+		@music = Gosu::Song.new(self,media_path('menu_music.mp3'))
+		@music.volume = 0.5
+		@music.play(true)
 		@animation = Explosion.load_animation(self)
+		@sound = Explosion.load_sound(self)		
 		@explosions = []
 	end
 	
@@ -75,7 +87,7 @@ class GameWindow <Gosu::Window
 		if id == Gosu::MsLeft
 			@explosions.push(
 				Explosion.new(
-				@animation, mouse_x, mouse_y))
+				@animation, @sound, mouse_x, mouse_y))
 		end
 	end
 
